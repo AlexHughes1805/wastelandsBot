@@ -4,11 +4,13 @@ const { Client } = require("exaroton");
 
 const client = new Client(process.env.EXAROTON_API_KEY);
 
-async function getServer() {
+async function getServer()
+{
     return client.server(process.env.EXAROTON_SERVER_ID);
 }
 
-async function ensureServerOnline(interaction) {
+async function ensureServerOnline(interaction)
+{
     const server = await getServer();
     const serverInfo = await server.get();
 
@@ -20,19 +22,23 @@ async function ensureServerOnline(interaction) {
         return;
     }
 
-    if (serverInfo.status === 0) {
+    if (serverInfo.status === 0)
+    {
         await interaction.followUp({ content: "Server is offline, starting it now…", ephemeral: true });
         await server.start();
-    } else if (serverInfo.status === 2) {
+    } else if (serverInfo.status === 2) 
+    {
         await interaction.followUp({ content: "Server is already starting, waiting for it to come online…", ephemeral: true });
-    } else {
+    } else
+    {
         await interaction.followUp({ content: `Unknown server status: ${serverInfo.status}`, ephemeral: true });
         return;
     }
 
     // Poll until online
     let attempts = 0;
-    while (attempts < 60) {
+    while (attempts < 60)
+    {
         await new Promise(r => setTimeout(r, 3000));
         const updatedInfo = await server.get();
         if (updatedInfo.status === 1) return;
@@ -42,7 +48,8 @@ async function ensureServerOnline(interaction) {
     throw new Error("Server took too long to start.");
 }
 
-async function runServerCommand(command) {
+async function runServerCommand(command)
+{
     const server = await getServer();
     return await server.executeCommand(command);
 }
